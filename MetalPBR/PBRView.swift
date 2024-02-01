@@ -26,12 +26,10 @@ struct PBRView: View {
     @State private var renderer: Renderer?
     
     var body: some View {
-        NavigationStack {
-            PBRViewRepresentable(metalView: $metalView)
-                .onAppear {
-                    renderer = Renderer(metalView: metalView)
-                }
-        }
+        PBRViewRepresentable(metalView: $metalView)
+            .onAppear {
+                renderer = Renderer(metalView: metalView)
+            }
     }
 }
 
