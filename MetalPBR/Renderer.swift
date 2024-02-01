@@ -53,28 +53,8 @@ class Renderer: NSObject {
         }
         Self.commandQueue = commandQueue
         
-        let shader = """
-        #include <metal_stdlib>
-        using namespace metal;
-        
-        struct VertexIn {
-            float4 position [[attribute(0)]];
-        };
-        
-        vertex float4 vertex_main(const VertexIn vertex_in [[stage_in]]) {
-            return vertex_in.position;
-        }
-        
-        fragment float4 fragment_main() {
-            return float4(0.715, 0.113, 0.867, 1);
-        }
-        """
-        do {
-            let library = try device.makeLibrary(source: shader, options: nil)
-            Self.library = library
-        } catch {
-            fatalError("TODO: Handle case where library could not be created")
-        }
+        let library = device.makeDefaultLibrary()
+        Self.library = library
         let vertexFunction = Self.library.makeFunction(name: "vertex_main")
         let fragmentFunction = Self.library.makeFunction(name: "fragment_main")
         
