@@ -18,29 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <metal_stdlib>
-using namespace metal;
-#import "Common.h"
+#ifndef Common_h
+#define Common_h
 
+#import <simd/simd.h>
 
-struct VertexIn {
-    float3 position [[attribute(PositionIndex)]];
-    float3 normal [[attribute(NormalIndex)]];
-    float2 uv [[attribute(UVIndex)]];
-};
+typedef enum {
+    VertexIndex = 0,
+    UniformsIndex = 1,
+    ParamsIndex = 2,
+    } BufferIndices;
 
-struct VertexOut {
-    float4 position [[position]];
-};
+typedef enum {
+    PositionIndex = 0,
+    NormalIndex = 1,
+    UVIndex = 2
+} AttributeIndices;
 
-vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]], constant Uniforms &uniforms [[buffer(UniformsIndex)]]) {
-    VertexOut out {
-        .position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(vertex_in.position, 1.0)
-    };
-    return out;
-}
+typedef struct {
+    matrix_float4x4 modelMatrix;
+    matrix_float4x4 viewMatrix;
+    matrix_float4x4 projectionMatrix;
+} Uniforms;
 
-fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamsIndex)]]) {
-    vector_float3 color = float3(1.0, 0.0, 0.0);
-    return float4(color, 1.0);
-}
+typedef struct {
+    uint width;
+    uint height;
+    vector_float3 cameraPosition;
+} Params;
+
+#endif /* Common_h */

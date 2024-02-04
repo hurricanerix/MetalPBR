@@ -15,6 +15,8 @@
 		9906FD9E2B65770E00911077 /* MetalPBRUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9906FD9D2B65770E00911077 /* MetalPBRUITests.swift */; };
 		9906FDA02B65770E00911077 /* MetalPBRUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9906FD9F2B65770E00911077 /* MetalPBRUITestsLaunchTests.swift */; };
 		990AE8562B6BC15100BDAF0B /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 990AE8552B6BC15100BDAF0B /* Shader.metal */; };
+		99399A772B6FFE690012C723 /* float4x4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99399A762B6FFE690012C723 /* float4x4.swift */; };
+		99399A7A2B6FFE980012C723 /* float4x4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99399A792B6FFE980012C723 /* float4x4Tests.swift */; };
 		996BFB082B657CE30081D0EA /* PBRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BFB072B657CE30081D0EA /* PBRView.swift */; };
 		996BFB0A2B657DE30081D0EA /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BFB092B657DE30081D0EA /* Renderer.swift */; };
 		9996EF9F2B657B9C00C7A86D /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 9996EF9E2B657B9C00C7A86D /* LICENSE */; };
@@ -51,6 +53,10 @@
 		9906FD9D2B65770E00911077 /* MetalPBRUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPBRUITests.swift; sourceTree = "<group>"; };
 		9906FD9F2B65770E00911077 /* MetalPBRUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPBRUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		990AE8552B6BC15100BDAF0B /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
+		991D8B7B2B6E575400726173 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		99399A762B6FFE690012C723 /* float4x4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = float4x4.swift; sourceTree = "<group>"; };
+		99399A792B6FFE980012C723 /* float4x4Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = float4x4Tests.swift; sourceTree = "<group>"; };
+		99399A7D2B700B340012C723 /* MetalPBR.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = MetalPBR.xctestplan; sourceTree = "<group>"; };
 		996BFB072B657CE30081D0EA /* PBRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PBRView.swift; sourceTree = "<group>"; };
 		996BFB092B657DE30081D0EA /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		9996EF9E2B657B9C00C7A86D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -86,6 +92,7 @@
 		9906FD762B65770D00911077 = {
 			isa = PBXGroup;
 			children = (
+				99399A7D2B700B340012C723 /* MetalPBR.xctestplan */,
 				9996EFA02B657BA500C7A86D /* README.md */,
 				9996EF9E2B657B9C00C7A86D /* LICENSE */,
 				99DB857D2B6936CB00D69EEA /* .gitignore */,
@@ -109,10 +116,12 @@
 		9906FD812B65770D00911077 /* MetalPBR */ = {
 			isa = PBXGroup;
 			children = (
+				99399A752B6FFE550012C723 /* Extensions */,
 				9906FD822B65770D00911077 /* MetalPBRApp.swift */,
 				9906FD842B65770D00911077 /* ContentView.swift */,
 				996BFB072B657CE30081D0EA /* PBRView.swift */,
 				996BFB092B657DE30081D0EA /* Renderer.swift */,
+				991D8B7B2B6E575400726173 /* Common.h */,
 				990AE8552B6BC15100BDAF0B /* Shader.metal */,
 				9906FD862B65770E00911077 /* Assets.xcassets */,
 				9906FD882B65770E00911077 /* Preview Content */,
@@ -131,6 +140,7 @@
 		9906FD922B65770E00911077 /* MetalPBRTests */ = {
 			isa = PBXGroup;
 			children = (
+				99399A782B6FFE810012C723 /* Extensions */,
 				9906FD932B65770E00911077 /* MetalPBRTests.swift */,
 			);
 			path = MetalPBRTests;
@@ -143,6 +153,22 @@
 				9906FD9F2B65770E00911077 /* MetalPBRUITestsLaunchTests.swift */,
 			);
 			path = MetalPBRUITests;
+			sourceTree = "<group>";
+		};
+		99399A752B6FFE550012C723 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				99399A762B6FFE690012C723 /* float4x4.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		99399A782B6FFE810012C723 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				99399A792B6FFE980012C723 /* float4x4Tests.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -281,6 +307,7 @@
 				996BFB0A2B657DE30081D0EA /* Renderer.swift in Sources */,
 				9906FD852B65770D00911077 /* ContentView.swift in Sources */,
 				9906FD832B65770D00911077 /* MetalPBRApp.swift in Sources */,
+				99399A772B6FFE690012C723 /* float4x4.swift in Sources */,
 				990AE8562B6BC15100BDAF0B /* Shader.metal in Sources */,
 				996BFB082B657CE30081D0EA /* PBRView.swift in Sources */,
 			);
@@ -291,6 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9906FD942B65770E00911077 /* MetalPBRTests.swift in Sources */,
+				99399A7A2B6FFE980012C723 /* float4x4Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +491,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/Common.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -493,6 +522,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/Common.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

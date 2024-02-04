@@ -21,25 +21,35 @@
 import MetalKit
 
 class Renderer: NSObject {
+    let speed: Float = 5
+    
     static var device: MTLDevice!
     static var commandQueue: MTLCommandQueue!
     static var library: MTLLibrary!
-    var mesh: MTKMesh!
     
+    var lastTime: Double = CFAbsoluteTimeGetCurrent()
+    var mesh: MTKMesh!
     var pipelineState: MTLRenderPipelineState!
+    var uniforms: Uniforms
+    var params: Params
+    var xRotation: Float
+    var yRotation: Float
+    var zRotation: Float
+    var viewMatrix: float4x4
+    var projectionMatrix: float4x4
+    var cameraPosition: SIMD3<Float>
     
     init(metalView: MTKView) {
-        // MARK: Initialize Metal
-        
+        // MARK: Create device
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("TODO: Handle case where GPU is not supported")
         }
         Self.device = device
         metalView.device = device
-                
+        
         // MARK: Load a model
         let allocator = MTKMeshBufferAllocator(device: device)
-        let mdlMesh = MDLMesh(boxWithExtent: [1, 1, 1], segments: [4, 4, 4], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+        let mdlMesh = MDLMesh(boxWithExtent: [1, 1, 1], segments: [1, 1, 1], inwardNormals: false, geometryType: .triangles, allocator: allocator)
         do {
             let mesh = try MTKMesh(mesh: mdlMesh, device: device)
             self.mesh = mesh
@@ -69,31 +79,83 @@ class Renderer: NSObject {
         } catch {
             fatalError("TODO: Handle case where pipeline state could not be created")
         }
+
+        // MARK: Initialize stored properties
+        
+        uniforms = Uniforms()
+        params = Params()
+        viewMatrix = float4x4()
+        projectionMatrix = float4x4()
+        cameraPosition = SIMD3<Float>(0, 0, -10)
+        xRotation = 0.0
+        yRotation = 0.0
+        zRotation = 0.0
         
         super.init()
+        
+        viewMatrix = float4x4.viewMatrix(translation: cameraPosition, rotation: SIMD3<Float>(0, 0, 0))
+        projectionMatrix = float4x4.projectionMatrix(fov: 45, near: 0.1, far: 100, aspect: 1.0)
+        
+        
         metalView.clearColor = MTLClearColor(red: 0.254, green: 0.410, blue: 0.879, alpha: 1)
         metalView.delegate = self
+        
+        mtkView(
+            metalView,
+            drawableSizeWillChange: metalView.drawableSize)
     }
 }
 
-// MARK: MTKViewDelegate Implementation
+// MARK: MTKViewDelegate
 
 extension Renderer: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        // TODO: Handle resize events.
+        projectionMatrix = float4x4.projectionMatrix(fov: 70, near: 0.1, far: 100, aspect: Float(size.width/size.height))
     }
     
     func draw(in view: MTKView) {
+        // MARK: Create Command Buffer
         guard let commandBuffer = Self.commandQueue.makeCommandBuffer(),
-                let renderPassDescriptor = view.currentRenderPassDescriptor,
+              let renderPassDescriptor = view.currentRenderPassDescriptor,
               let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
         else {
             fatalError("TODO: Handle case where command buffer could not be created")
         }
-        renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setVertexBuffer(
-            self.mesh.vertexBuffers[0].buffer, offset: 0, index: 0)
         
+        // MARK: Update
+        let currentTime = CFAbsoluteTimeGetCurrent()
+        let deltaTime = Float(currentTime - lastTime)
+        lastTime = currentTime
+        
+        xRotation += 10.0 * speed * deltaTime
+        yRotation += 7.0 * speed * deltaTime
+        zRotation += 3.0 * speed * deltaTime
+        let modelMatrix = float4x4.rotate(eulerX: xRotation) * float4x4.rotate(eulerY: yRotation) * float4x4.rotate(eulerZ: zRotation)
+        
+        // MARK: Update buffer data
+        uniforms.modelMatrix = modelMatrix
+        uniforms.viewMatrix = viewMatrix
+        uniforms.projectionMatrix = projectionMatrix
+        params.cameraPosition = cameraPosition
+        
+        // MARK: Set Pipeline State
+        renderEncoder.setRenderPipelineState(pipelineState)
+        
+        // MARK: Set Buffer Data
+        renderEncoder.setVertexBytes(
+            &uniforms,
+            length: MemoryLayout<Uniforms>.stride,
+            index: Int(UniformsIndex.rawValue))
+        
+        renderEncoder.setFragmentBytes(
+            &params,
+            length: MemoryLayout<Params>.stride,
+            index: Int(ParamsIndex.rawValue))
+        
+        renderEncoder.setVertexBuffer(
+            self.mesh.vertexBuffers[0].buffer, offset: 0, index: Int(VertexIndex.rawValue))
+        
+        // MARK: Render
         for submesh in mesh.submeshes {
             renderEncoder.drawIndexedPrimitives(
                 type: .triangle,
@@ -103,6 +165,7 @@ extension Renderer: MTKViewDelegate {
                 indexBufferOffset: submesh.indexBuffer.offset)
         }
         
+        // MARK: End Encoding
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {
             fatalError("TODO: Handle case where could not get currentDrawable")

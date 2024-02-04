@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "44C27213-84B8-4958-A4CE-A43EED1603E8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:MetalPBR.xcodeproj",
+      "identifier" : "9906FD7E2B65770D00911077",
+      "name" : "MetalPBR"
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MetalPBR.xcodeproj",
+        "identifier" : "9906FD8E2B65770E00911077",
+        "name" : "MetalPBRTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MetalPBR.xcodeproj",
+        "identifier" : "9906FD982B65770E00911077",
+        "name" : "MetalPBRUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
