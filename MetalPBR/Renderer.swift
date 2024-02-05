@@ -39,7 +39,7 @@ class Renderer: NSObject {
     var projectionMatrix: float4x4
     var cameraPosition: SIMD3<Float>
     
-    init(metalView: MTKView) {
+    init(metalView: MTKView, clearColor: SIMD4<Float>) {
         // MARK: Create device
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("TODO: Handle case where GPU is not supported")
@@ -97,7 +97,7 @@ class Renderer: NSObject {
         projectionMatrix = float4x4.projectionMatrix(fov: 45, near: 0.1, far: 100, aspect: 1.0)
         
         
-        metalView.clearColor = MTLClearColor(red: 0.254, green: 0.410, blue: 0.879, alpha: 1)
+        metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
         metalView.delegate = self
         
         mtkView(

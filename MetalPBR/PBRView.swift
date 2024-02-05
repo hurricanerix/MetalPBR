@@ -20,15 +20,21 @@
 
 import SwiftUI
 import MetalKit
+import UIKit
 
 struct PBRView: View {
     @State private var metalView = MTKView()
     @State private var renderer: Renderer?
+    @State private var clearColor: Color
+    
+    init(clearColor: Color) {
+        self.clearColor = clearColor
+    }
     
     var body: some View {
         PBRViewRepresentable(metalView: $metalView)
             .onAppear {
-                renderer = Renderer(metalView: metalView)
+                renderer = Renderer(metalView: metalView, clearColor: clearColor.rgba())
             }
     }
 }
@@ -49,5 +55,5 @@ struct PBRViewRepresentable: UIViewRepresentable {
 }
 
 #Preview {
-    PBRView()
+    PBRView(clearColor: Color.green)
 }

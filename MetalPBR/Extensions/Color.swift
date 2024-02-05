@@ -20,22 +20,16 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    var body: some View {
-        TabView {
-            PBRView(clearColor: Color.blue)
-                .tabItem {
-                    Label("Render", systemImage: "cube.fill")
-                }
-            
-            PBRView(clearColor: Color.green)
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
-                }
+extension Color {
+    func rgba() -> SIMD4<Float> {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        guard UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a) else {
+            // TODO: Handle unable to parse colors.
+            return SIMD4<Float>(0, 0, 0, 0)
         }
+        return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
     }
-}
-
-#Preview {
-    ContentView()
 }
