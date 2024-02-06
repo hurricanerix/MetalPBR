@@ -19,44 +19,20 @@
 // SOFTWARE.
 
 import SwiftUI
-import MetalKit
-import UIKit
 
-struct PBRView: View {
-    @EnvironmentObject var camera: PerspectiveCamera
-    
-    @State private var metalView = MTKView()
-    @State private var renderer: Renderer?
-    @State private var clearColor: Color
-    
-    init(clearColor: Color) {
-        self.clearColor = clearColor
-    }
-    
+struct EnvironmentSettingsView: View {
     var body: some View {
-        PBRViewRepresentable(metalView: $metalView)
-            .onAppear {
-                renderer = Renderer(metalView: metalView, clearColor: clearColor.rgba(), camera: camera)
+        VStack {
+            PBRView(clearColor: .green)
+            Form {
+                
+                Text("Environment Settings")
             }
-    }
-}
-
-struct PBRViewRepresentable: UIViewRepresentable {
-    @Binding var metalView: MTKView
-    
-    func makeUIView(context: Context) -> MTKView {
-        metalView
-    }
-    
-    func updateUIView(_ uiView: MTKView, context: Context) {
-        updatePBRView()
-    }
-    
-    func updatePBRView() {
+        }
     }
 }
 
 #Preview {
-    PBRView(clearColor: Color.green)
+    EnvironmentSettingsView()
         .environmentObject(PerspectiveCamera())
 }

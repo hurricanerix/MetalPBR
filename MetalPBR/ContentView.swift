@@ -21,16 +21,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var camera: PerspectiveCamera
+    
     var body: some View {
         TabView {
-            PBRView(clearColor: Color.blue)
+            PBRView(clearColor: .green)
                 .tabItem {
-                    Label("Render", systemImage: "cube.fill")
+                    Label("Render", systemImage: "photo.fill")
+                }
+            ObjectSettingsView()
+                .tabItem {
+                    Label("Render", systemImage: "photo.fill")
                 }
             
-            PBRView(clearColor: Color.green)
+            CameraSettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
+                    Label("Camera", systemImage: "camera.fill")
+                }
+            EnvironmentSettingsView()
+                .tabItem {
+                    Label("Environment", systemImage: "lightbulb.max.fill")
                 }
         }
     }
@@ -38,4 +48,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(PerspectiveCamera())
 }

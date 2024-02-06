@@ -17,8 +17,13 @@
 		990AE8562B6BC15100BDAF0B /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 990AE8552B6BC15100BDAF0B /* Shader.metal */; };
 		9921B3652B71014C008774CC /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921B3642B71014C008774CC /* Color.swift */; };
 		9921B3692B710252008774CC /* ColorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921B3682B710252008774CC /* ColorTests.swift */; };
+		9921B36B2B711201008774CC /* PerspectiveCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921B36A2B711201008774CC /* PerspectiveCamera.swift */; };
+		9921B36D2B7194C0008774CC /* CameraSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9921B36C2B7194C0008774CC /* CameraSettingsView.swift */; };
 		99399A772B6FFE690012C723 /* float4x4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99399A762B6FFE690012C723 /* float4x4.swift */; };
 		99399A7A2B6FFE980012C723 /* float4x4Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99399A792B6FFE980012C723 /* float4x4Tests.swift */; };
+		9956490B2B7254EA0003103D /* PerspectiveCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9956490A2B7254EA0003103D /* PerspectiveCameraTests.swift */; };
+		9956490D2B7278870003103D /* ObjectSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9956490C2B7278870003103D /* ObjectSettingsView.swift */; };
+		9956490F2B7278A50003103D /* EnvironmentSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9956490E2B7278A50003103D /* EnvironmentSettingsView.swift */; };
 		996BFB082B657CE30081D0EA /* PBRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BFB072B657CE30081D0EA /* PBRView.swift */; };
 		996BFB0A2B657DE30081D0EA /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BFB092B657DE30081D0EA /* Renderer.swift */; };
 		9996EF9F2B657B9C00C7A86D /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 9996EF9E2B657B9C00C7A86D /* LICENSE */; };
@@ -58,9 +63,14 @@
 		991D8B7B2B6E575400726173 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		9921B3642B71014C008774CC /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		9921B3682B710252008774CC /* ColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTests.swift; sourceTree = "<group>"; };
+		9921B36A2B711201008774CC /* PerspectiveCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveCamera.swift; sourceTree = "<group>"; };
+		9921B36C2B7194C0008774CC /* CameraSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSettingsView.swift; sourceTree = "<group>"; };
 		99399A762B6FFE690012C723 /* float4x4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = float4x4.swift; sourceTree = "<group>"; };
 		99399A792B6FFE980012C723 /* float4x4Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = float4x4Tests.swift; sourceTree = "<group>"; };
 		99399A7D2B700B340012C723 /* MetalPBR.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = MetalPBR.xctestplan; sourceTree = "<group>"; };
+		9956490A2B7254EA0003103D /* PerspectiveCameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveCameraTests.swift; sourceTree = "<group>"; };
+		9956490C2B7278870003103D /* ObjectSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectSettingsView.swift; sourceTree = "<group>"; };
+		9956490E2B7278A50003103D /* EnvironmentSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentSettingsView.swift; sourceTree = "<group>"; };
 		996BFB072B657CE30081D0EA /* PBRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PBRView.swift; sourceTree = "<group>"; };
 		996BFB092B657DE30081D0EA /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		9996EF9E2B657B9C00C7A86D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -123,7 +133,11 @@
 				99399A752B6FFE550012C723 /* Extensions */,
 				9906FD822B65770D00911077 /* MetalPBRApp.swift */,
 				9906FD842B65770D00911077 /* ContentView.swift */,
+				9956490C2B7278870003103D /* ObjectSettingsView.swift */,
+				9921B36C2B7194C0008774CC /* CameraSettingsView.swift */,
+				9956490E2B7278A50003103D /* EnvironmentSettingsView.swift */,
 				996BFB072B657CE30081D0EA /* PBRView.swift */,
+				9921B36A2B711201008774CC /* PerspectiveCamera.swift */,
 				996BFB092B657DE30081D0EA /* Renderer.swift */,
 				991D8B7B2B6E575400726173 /* Common.h */,
 				990AE8552B6BC15100BDAF0B /* Shader.metal */,
@@ -146,6 +160,7 @@
 			children = (
 				99399A782B6FFE810012C723 /* Extensions */,
 				9906FD932B65770E00911077 /* MetalPBRTests.swift */,
+				9956490A2B7254EA0003103D /* PerspectiveCameraTests.swift */,
 			);
 			path = MetalPBRTests;
 			sourceTree = "<group>";
@@ -310,9 +325,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9956490F2B7278A50003103D /* EnvironmentSettingsView.swift in Sources */,
+				9921B36B2B711201008774CC /* PerspectiveCamera.swift in Sources */,
 				996BFB0A2B657DE30081D0EA /* Renderer.swift in Sources */,
 				9906FD852B65770D00911077 /* ContentView.swift in Sources */,
 				9921B3652B71014C008774CC /* Color.swift in Sources */,
+				9956490D2B7278870003103D /* ObjectSettingsView.swift in Sources */,
+				9921B36D2B7194C0008774CC /* CameraSettingsView.swift in Sources */,
 				9906FD832B65770D00911077 /* MetalPBRApp.swift in Sources */,
 				99399A772B6FFE690012C723 /* float4x4.swift in Sources */,
 				990AE8562B6BC15100BDAF0B /* Shader.metal in Sources */,
@@ -325,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9906FD942B65770E00911077 /* MetalPBRTests.swift in Sources */,
+				9956490B2B7254EA0003103D /* PerspectiveCameraTests.swift in Sources */,
 				9921B3692B710252008774CC /* ColorTests.swift in Sources */,
 				99399A7A2B6FFE980012C723 /* float4x4Tests.swift in Sources */,
 			);

@@ -83,26 +83,4 @@ extension float4x4 {
     static func rotate(eulers degrees: SIMD3<Float>) -> float4x4 {
         return rotate(eulerX: degrees.x) * rotate(eulerY: degrees.y) * rotate(eulerZ: degrees.z)
     }
-    
-    static func viewMatrix(translation: SIMD3<Float>, rotation: SIMD3<Float>) ->
-    float4x4 {
-        let translationMatrix = float4x4.translate(by: translation)
-        let rotationMatrix = float4x4.rotate(eulers: rotation)
-        return (translationMatrix * rotationMatrix).inverse
-    }
-    
-    static func projectionMatrix(fov: Float, near: Float, far: Float, aspect: Float) -> float4x4 {
-        let fov = 45 * piBy180
-        var matrix = float4x4()
-        let y = 1 / tan(fov * 0.5)
-        let x = y / aspect
-        let z = far / (far - near)
-        let X = SIMD4<Float>( x,  0,  0,  0)
-        let Y = SIMD4<Float>( 0,  y,  0,  0)
-        let Z = SIMD4<Float>( 0,  0,  z, 1)
-        let W = SIMD4<Float>( 0,  0,  z * -near,  0)
-        matrix.columns = (X, Y, Z, W)
-        return matrix
-    }
-    
 }

@@ -35,11 +35,10 @@ class Renderer: NSObject {
     var xRotation: Float
     var yRotation: Float
     var zRotation: Float
-    var viewMatrix: float4x4
-    var projectionMatrix: float4x4
     var cameraPosition: SIMD3<Float>
+    var camera: PerspectiveCamera
     
-    init(metalView: MTKView, clearColor: SIMD4<Float>) {
+    init(metalView: MTKView, clearColor: SIMD4<Float>, camera: PerspectiveCamera) {
         // MARK: Create device
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("TODO: Handle case where GPU is not supported")
@@ -84,18 +83,13 @@ class Renderer: NSObject {
         
         uniforms = Uniforms()
         params = Params()
-        viewMatrix = float4x4()
-        projectionMatrix = float4x4()
         cameraPosition = SIMD3<Float>(0, 0, -10)
         xRotation = 0.0
         yRotation = 0.0
         zRotation = 0.0
+        self.camera = camera
         
         super.init()
-        
-        viewMatrix = float4x4.viewMatrix(translation: cameraPosition, rotation: SIMD3<Float>(0, 0, 0))
-        projectionMatrix = float4x4.projectionMatrix(fov: 45, near: 0.1, far: 100, aspect: 1.0)
-        
         
         metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
         metalView.delegate = self
@@ -110,7 +104,7 @@ class Renderer: NSObject {
 
 extension Renderer: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        projectionMatrix = float4x4.projectionMatrix(fov: 70, near: 0.1, far: 100, aspect: Float(size.width/size.height))
+        camera.set(aspect: Float(size.width/size.height))
     }
     
     func draw(in view: MTKView) {
@@ -134,8 +128,8 @@ extension Renderer: MTKViewDelegate {
         
         // MARK: Update buffer data
         uniforms.modelMatrix = modelMatrix
-        uniforms.viewMatrix = viewMatrix
-        uniforms.projectionMatrix = projectionMatrix
+        uniforms.viewMatrix = camera.viewMatrix
+        uniforms.projectionMatrix = camera.projectionMatrix
         params.cameraPosition = cameraPosition
         
         // MARK: Set Pipeline State
