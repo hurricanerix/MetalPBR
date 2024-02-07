@@ -48,7 +48,19 @@ class Renderer: NSObject {
         
         // MARK: Load a model
         let allocator = MTKMeshBufferAllocator(device: device)
-        let mdlMesh = MDLMesh(boxWithExtent: [1, 1, 1], segments: [1, 1, 1], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+//        let mdlMesh = MDLMesh(boxWithExtent: [1, 1, 1], segments: [1, 1, 1], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+        guard let assetURL = Bundle.main.url(forResource: "cube", withExtension: "usdz") else {
+            fatalError("TODO: Handle case where model could not be loaded")
+        }
+        let vertexDescriptor = MTLVertexDescriptor()
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].bufferIndex = Int(VertexIndex.rawValue)
+        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD3<Float>>.stride
+        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
+        (meshDescriptor.attributes[0] as! MDLVertexAttribute).name = MDLVertexAttributePosition
+        let asset = MDLAsset(url: assetURL, vertexDescriptor: meshDescriptor, bufferAllocator: allocator)
+        let mdlMesh = asset.childObjects(of: MDLMesh.self).first as! MDLMesh
         do {
             let mesh = try MTKMesh(mesh: mdlMesh, device: device)
             self.mesh = mesh
