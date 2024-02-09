@@ -24,9 +24,9 @@
 #import <simd/simd.h>
 
 typedef enum {
-    VertexIndex = 0,
-    UniformsIndex = 1,
-    ParamsIndex = 2,
+    VertexBufferIndex = 0,
+    UniformBufferIndex = 1,
+    ParamBufferIndex = 2,
     } BufferIndices;
 
 typedef enum {
@@ -39,12 +39,17 @@ typedef struct {
     matrix_float4x4 modelMatrix;
     matrix_float4x4 viewMatrix;
     matrix_float4x4 projectionMatrix;
+    matrix_float3x3 normalMatrix;
 } Uniforms;
 
 typedef struct {
     uint width;
     uint height;
     vector_float3 cameraPosition;
+    float ambientStrength;
+    vector_float3 ambientColor;
+    vector_float3 lightPosition;
+    vector_float3 lightColor;
 } Params;
 
 #endif /* Common_h */

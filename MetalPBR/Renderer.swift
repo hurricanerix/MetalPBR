@@ -30,6 +30,7 @@ class Renderer: NSObject {
     var lastTime: Double = CFAbsoluteTimeGetCurrent()
     var mesh: MTKMesh!
     var pipelineState: MTLRenderPipelineState!
+    var depthStencilState: MTLDepthStencilState!
     var uniforms: Uniforms
     var params: Params
     var xRotation: Float
@@ -48,18 +49,53 @@ class Renderer: NSObject {
         
         // MARK: Load a model
         let allocator = MTKMeshBufferAllocator(device: device)
-//        let mdlMesh = MDLMesh(boxWithExtent: [1, 1, 1], segments: [1, 1, 1], inwardNormals: false, geometryType: .triangles, allocator: allocator)
         guard let assetURL = Bundle.main.url(forResource: "cube", withExtension: "usdz") else {
             fatalError("TODO: Handle case where model could not be loaded")
         }
-        let vertexDescriptor = MTLVertexDescriptor()
-        vertexDescriptor.attributes[0].format = .float3
-        vertexDescriptor.attributes[0].offset = 0
-        vertexDescriptor.attributes[0].bufferIndex = Int(VertexIndex.rawValue)
-        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD3<Float>>.stride
-        let meshDescriptor = MTKModelIOVertexDescriptorFromMetal(vertexDescriptor)
-        (meshDescriptor.attributes[0] as! MDLVertexAttribute).name = MDLVertexAttributePosition
-        let asset = MDLAsset(url: assetURL, vertexDescriptor: meshDescriptor, bufferAllocator: allocator)
+        
+        let mdlVertexDescriptor = MDLVertexDescriptor()
+        var offset = 0
+        mdlVertexDescriptor.attributes[Int(PositionIndex.rawValue)] = MDLVertexAttribute(
+            name: MDLVertexAttributePosition,
+            format: .float3,
+            offset: 0,
+            bufferIndex: Int(VertexBufferIndex.rawValue))
+        offset += MemoryLayout<SIMD3<Float>>.stride
+        
+        mdlVertexDescriptor.attributes[Int(NormalIndex.rawValue)] = MDLVertexAttribute(
+            name: MDLVertexAttributeNormal,
+            format: .float3,
+            offset: offset,
+            bufferIndex: Int(VertexBufferIndex.rawValue))
+        offset += MemoryLayout<SIMD3<Float>>.stride
+        mdlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)]
+        = MDLVertexBufferLayout(stride: offset)
+        
+        mdlVertexDescriptor.attributes[Int(UVIndex.rawValue)] = MDLVertexAttribute(
+            name: MDLVertexAttributeTextureCoordinate,
+            format: .float2,
+            offset: offset,
+            bufferIndex: Int(VertexBufferIndex.rawValue))
+        
+        mdlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)] = MDLVertexBufferLayout(stride: MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride)
+        
+        let mtlVertexDescriptor = MTLVertexDescriptor()
+        
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].offset = 0
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].offset = 3
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].offset = 6
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        
+        mtlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)].stride = MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride
+        
+        let asset = MDLAsset(url: assetURL, vertexDescriptor: mdlVertexDescriptor, bufferAllocator: allocator)
         let mdlMesh = asset.childObjects(of: MDLMesh.self).first as! MDLMesh
         do {
             let mesh = try MTKMesh(mesh: mdlMesh, device: device)
@@ -84,13 +120,19 @@ class Renderer: NSObject {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(self.mesh.vertexDescriptor)
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         do {
             let pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
             self.pipelineState = pipelineState
         } catch {
             fatalError("TODO: Handle case where pipeline state could not be created")
         }
-
+        
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.depthCompareFunction = .less
+        depthStencilDescriptor.isDepthWriteEnabled = true
+        depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
+        
         // MARK: Initialize stored properties
         
         uniforms = Uniforms()
@@ -104,6 +146,7 @@ class Renderer: NSObject {
         super.init()
         
         metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
+        metalView.depthStencilPixelFormat = .depth32Float
         metalView.delegate = self
         
         mtkView(
@@ -142,24 +185,30 @@ extension Renderer: MTKViewDelegate {
         uniforms.modelMatrix = modelMatrix
         uniforms.viewMatrix = camera.viewMatrix
         uniforms.projectionMatrix = camera.projectionMatrix
+        
         params.cameraPosition = cameraPosition
+        params.ambientStrength = 0.1
+        params.ambientColor = SIMD3<Float>(1.0, 1.0, 1.0)
+        params.lightPosition = SIMD3<Float>(-1.0, 10.0, -5.0)
+        params.lightColor = SIMD3<Float>(0.2, 0.2, 0.8)
         
         // MARK: Set Pipeline State
+        renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
         
         // MARK: Set Buffer Data
         renderEncoder.setVertexBytes(
             &uniforms,
             length: MemoryLayout<Uniforms>.stride,
-            index: Int(UniformsIndex.rawValue))
+            index: Int(UniformBufferIndex.rawValue))
         
         renderEncoder.setFragmentBytes(
             &params,
             length: MemoryLayout<Params>.stride,
-            index: Int(ParamsIndex.rawValue))
+            index: Int(ParamBufferIndex.rawValue))
         
         renderEncoder.setVertexBuffer(
-            self.mesh.vertexBuffers[0].buffer, offset: 0, index: Int(VertexIndex.rawValue))
+            self.mesh.vertexBuffers[0].buffer, offset: 0, index: Int(VertexBufferIndex.rawValue))
         
         // MARK: Render
         for submesh in mesh.submeshes {

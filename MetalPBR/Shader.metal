@@ -24,23 +24,39 @@ using namespace metal;
 
 
 struct VertexIn {
-    float3 position [[attribute(PositionIndex)]];
+    float4 position [[attribute(PositionIndex)]];
     float3 normal [[attribute(NormalIndex)]];
     float2 uv [[attribute(UVIndex)]];
 };
 
 struct VertexOut {
     float4 position [[position]];
+    float3 fragPosition;
+    float3 normal;
+    float2 uv;
 };
 
-vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]], constant Uniforms &uniforms [[buffer(UniformsIndex)]]) {
+vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]], constant Uniforms &uniforms [[buffer(UniformBufferIndex)]]) {
+    float4 worldPosition = uniforms.modelMatrix * vertex_in.position;
+    
     VertexOut out {
-        .position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(vertex_in.position, 1.0)
+        .position = uniforms.projectionMatrix * uniforms.viewMatrix * worldPosition,
+        .fragPosition = worldPosition.xyz,
+        .normal = (uniforms.modelMatrix * float4(vertex_in.normal, 1.0)).xyz,
+        .uv = vertex_in.uv
     };
     return out;
 }
 
-fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamsIndex)]]) {
-    vector_float3 color = float3(1.0, 0.0, 0.0);
+fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamBufferIndex)]]) {
+    float3 ambient = params.ambientStrength * params.ambientColor;
+    
+    float3 normal = normalize(in.normal);
+    float3 lightDirection = normalize(params.lightPosition - normal);
+  
+    float diff = max(dot(normal, lightDirection), 0.0);
+    float3 diffuse = diff * params.lightColor;
+    
+    vector_float3 color = ambient + diffuse;
     return float4(color, 1.0);
 }

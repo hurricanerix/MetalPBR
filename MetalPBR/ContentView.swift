@@ -31,7 +31,7 @@ struct ContentView: View {
                 }
             ObjectSettingsView()
                 .tabItem {
-                    Label("Render", systemImage: "photo.fill")
+                    Label("Object", systemImage: "cube.fill")
                 }
             
             CameraSettingsView()

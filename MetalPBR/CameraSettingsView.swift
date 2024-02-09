@@ -64,7 +64,7 @@ struct CameraSettingsView: View {
                         TextField("Z", value: $angleZ, format: .number)
                     }
                     .onSubmit {
-                        var newRotation = SIMD3<Float>(angleX, angleY, angleZ)
+                        let newRotation = SIMD3<Float>(angleX, angleY, angleZ)
                         camera.set(rotation: newRotation)
                     }
                 }
