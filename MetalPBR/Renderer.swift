@@ -38,6 +38,7 @@ class Renderer: NSObject {
     var zRotation: Float
     var cameraPosition: SIMD3<Float>
     var camera: PerspectiveCamera
+    var baseColor: MTLTexture?
     
     init(metalView: MTKView, clearColor: SIMD4<Float>, camera: PerspectiveCamera) {
         // MARK: Create device
@@ -143,7 +144,27 @@ class Renderer: NSObject {
         zRotation = 0.0
         self.camera = camera
         
+        asset.loadTextures()
+        
         super.init()
+        
+        // Load base color texture
+        for s in mdlMesh.submeshes! {
+            let submesh = s as! MDLSubmesh?
+            if submesh == nil {
+                continue
+            }
+            
+            if let property = submesh?.material?.property(with: .baseColor), property.type == .texture, let mdlTexture = property.textureSamplerValue?.texture {
+                let textureLoader = MTKTextureLoader(device: Renderer.device)
+                let textureLoaderOptions: [MTKTextureLoader.Option: Any] =
+                [.origin: MTKTextureLoader.Origin.bottomLeft,
+                 .generateMipmaps: true]
+                baseColor = try? textureLoader.newTexture(
+                    texture: mdlTexture,
+                    options: textureLoaderOptions)
+            }
+        }
         
         metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
         metalView.depthStencilPixelFormat = .depth32Float
@@ -188,9 +209,7 @@ extension Renderer: MTKViewDelegate {
         
         params.cameraPosition = cameraPosition
         params.ambientStrength = 0.1
-        params.ambientColor = SIMD3<Float>(1.0, 1.0, 1.0)
         params.lightPosition = SIMD3<Float>(-1.0, 10.0, -5.0)
-        params.lightColor = SIMD3<Float>(0.2, 0.2, 0.8)
         
         // MARK: Set Pipeline State
         renderEncoder.setDepthStencilState(depthStencilState)
@@ -212,6 +231,12 @@ extension Renderer: MTKViewDelegate {
         
         // MARK: Render
         for submesh in mesh.submeshes {
+            
+            renderEncoder.setFragmentTexture(
+              baseColor,
+              index: Int(BaseColorTextureIndex.rawValue))
+            
+            
             renderEncoder.drawIndexedPrimitives(
                 type: .triangle,
                 indexCount: submesh.indexCount,

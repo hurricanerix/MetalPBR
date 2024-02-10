@@ -48,14 +48,17 @@ vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]], constant Uni
     return out;
 }
 
-fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamBufferIndex)]]) {
-    float3 ambient = params.ambientStrength * params.ambientColor;
+fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamBufferIndex)]], texture2d<float> baseColorTexture [[texture(BaseColorTextureIndex)]]) {
+    constexpr sampler textureSampler(filter::linear, mip_filter::linear, max_anisotropy(8), address::repeat);
+    float3 baseColor = baseColorTexture.sample(textureSampler, in.uv).rgb;
+    
+    float3 ambient = params.ambientStrength * baseColor;
     
     float3 normal = normalize(in.normal);
     float3 lightDirection = normalize(params.lightPosition - normal);
-  
+    
     float diff = max(dot(normal, lightDirection), 0.0);
-    float3 diffuse = diff * params.lightColor;
+    float3 diffuse = diff * baseColor;
     
     vector_float3 color = ambient + diffuse;
     return float4(color, 1.0);

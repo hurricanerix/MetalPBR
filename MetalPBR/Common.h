@@ -27,13 +27,25 @@ typedef enum {
     VertexBufferIndex = 0,
     UniformBufferIndex = 1,
     ParamBufferIndex = 2,
-    } BufferIndices;
+} BufferIndices;
 
 typedef enum {
     PositionIndex = 0,
     NormalIndex = 1,
     UVIndex = 2
 } AttributeIndices;
+
+typedef enum {
+    BaseColorTextureIndex = 0,
+    EmissiveTextureIndex = 1,
+    MetallicTextureIndex = 2,
+    RoughnessTextureIndex = 3,
+    NormalTextureIndex = 4,
+    OcclusionTextureIndex = 5,
+    OpacityTextureIndex = 6,
+    ClearcoatTextureIndex = 7,
+    ClearcoatRoughnessTextureIndex = 8
+} TextureIndices;
 
 typedef struct {
     matrix_float4x4 modelMatrix;
@@ -47,9 +59,7 @@ typedef struct {
     uint height;
     vector_float3 cameraPosition;
     float ambientStrength;
-    vector_float3 ambientColor;
     vector_float3 lightPosition;
-    vector_float3 lightColor;
 } Params;
 
 #endif /* Common_h */
