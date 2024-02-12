@@ -39,6 +39,7 @@ class Renderer: NSObject {
     var cameraPosition: SIMD3<Float>
     var camera: PerspectiveCamera
     var baseColor: MTLTexture?
+    var normal: MTLTexture?
     
     init(metalView: MTKView, clearColor: SIMD4<Float>, camera: PerspectiveCamera) {
         // MARK: Create device
@@ -69,41 +70,72 @@ class Renderer: NSObject {
             offset: offset,
             bufferIndex: Int(VertexBufferIndex.rawValue))
         offset += MemoryLayout<SIMD3<Float>>.stride
-        mdlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)]
-        = MDLVertexBufferLayout(stride: offset)
         
         mdlVertexDescriptor.attributes[Int(UVIndex.rawValue)] = MDLVertexAttribute(
             name: MDLVertexAttributeTextureCoordinate,
             format: .float2,
             offset: offset,
             bufferIndex: Int(VertexBufferIndex.rawValue))
+        offset += MemoryLayout<SIMD2<Float>>.stride
         
-        mdlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)] = MDLVertexBufferLayout(stride: MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride)
+        mdlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)] = MDLVertexBufferLayout(stride: offset)
         
-        let mtlVertexDescriptor = MTLVertexDescriptor()
+        mdlVertexDescriptor.attributes[Int(TangentIndex.rawValue)] =
+          MDLVertexAttribute(
+            name: MDLVertexAttributeTangent,
+            format: .float3,
+            offset: 0,
+            bufferIndex: Int(TangentBufferIndex.rawValue))
+        mdlVertexDescriptor.layouts[Int(TangentBufferIndex.rawValue)] = MDLVertexBufferLayout(stride: MemoryLayout<SIMD3<Float>>.stride)
         
-        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].format = .float3
-        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].offset = 0
-        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
-        
-        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].format = .float3
-        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].offset = 3
-        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
-        
-        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].format = .float3
-        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].offset = 6
-        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
-        
-        mtlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)].stride = MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride
+        mdlVertexDescriptor.attributes[Int(BitangentIndex.rawValue)] =
+          MDLVertexAttribute(
+            name: MDLVertexAttributeBitangent,
+            format: .float3,
+            offset: 0,
+            bufferIndex: Int(BitangentBufferIndex.rawValue))
+        mdlVertexDescriptor.layouts[Int(BitangentBufferIndex.rawValue)]
+          = MDLVertexBufferLayout(stride: MemoryLayout<SIMD3<Float>>.stride)
         
         let asset = MDLAsset(url: assetURL, vertexDescriptor: mdlVertexDescriptor, bufferAllocator: allocator)
         let mdlMesh = asset.childObjects(of: MDLMesh.self).first as! MDLMesh
+
+        mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate, tangentAttributeNamed: MDLVertexAttributeTangent, bitangentAttributeNamed: MDLVertexAttributeBitangent)
         do {
             let mesh = try MTKMesh(mesh: mdlMesh, device: device)
             self.mesh = mesh
         } catch {
             fatalError("TODO: Handle case where MDLMesh could not be converted to MTKMesh")
         }
+        
+        let mtlVertexDescriptor = MTLVertexDescriptor()
+        offset = 0
+        
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].offset = offset
+        mtlVertexDescriptor.attributes[Int(PositionIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        offset += MemoryLayout<SIMD3<Float>>.stride
+        
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].offset = offset
+        mtlVertexDescriptor.attributes[Int(NormalIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        offset += MemoryLayout<SIMD3<Float>>.stride
+        
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].format = .float2
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].offset = offset
+        mtlVertexDescriptor.attributes[Int(UVIndex.rawValue)].bufferIndex = Int(VertexBufferIndex.rawValue)
+        offset += MemoryLayout<SIMD2<Float>>.stride
+        mtlVertexDescriptor.layouts[Int(VertexBufferIndex.rawValue)].stride = offset
+        
+        mtlVertexDescriptor.attributes[Int(TangentIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(TangentIndex.rawValue)].offset = 0
+        mtlVertexDescriptor.attributes[Int(TangentIndex.rawValue)].bufferIndex = Int(TangentBufferIndex.rawValue)
+        mtlVertexDescriptor.layouts[Int(TangentBufferIndex.rawValue)].stride = MemoryLayout<SIMD3<Float>>.stride
+
+        mtlVertexDescriptor.attributes[Int(BitangentIndex.rawValue)].format = .float3
+        mtlVertexDescriptor.attributes[Int(BitangentIndex.rawValue)].offset = 0
+        mtlVertexDescriptor.attributes[Int(BitangentIndex.rawValue)].bufferIndex = Int(BitangentIndex.rawValue)
+        mtlVertexDescriptor.layouts[Int(BitangentBufferIndex.rawValue)].stride = MemoryLayout<SIMD3<Float>>.stride
         
         // MARK: Set up the pipeline
         guard let commandQueue = device.makeCommandQueue() else {
@@ -164,6 +196,16 @@ class Renderer: NSObject {
                     texture: mdlTexture,
                     options: textureLoaderOptions)
             }
+            
+            if let property = submesh?.material?.property(with: .tangentSpaceNormal), property.type == .texture, let mdlTexture = property.textureSamplerValue?.texture {
+                let textureLoader = MTKTextureLoader(device: Renderer.device)
+                let textureLoaderOptions: [MTKTextureLoader.Option: Any] =
+                [.origin: MTKTextureLoader.Origin.bottomLeft,
+                 .generateMipmaps: true]
+                normal = try? textureLoader.newTexture(
+                    texture: mdlTexture,
+                    options: textureLoaderOptions)
+            }
         }
         
         metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
@@ -206,10 +248,11 @@ extension Renderer: MTKViewDelegate {
         uniforms.modelMatrix = modelMatrix
         uniforms.viewMatrix = camera.viewMatrix
         uniforms.projectionMatrix = camera.projectionMatrix
+        uniforms.normalMatrix = getNormalMatrix(modelMatrix)
+        uniforms.lightPosition = SIMD3<Float>(-1.0, 10.0, -5.0)
+        uniforms.viewPosition = cameraPosition
         
-        params.cameraPosition = cameraPosition
         params.ambientStrength = 0.1
-        params.lightPosition = SIMD3<Float>(-1.0, 10.0, -5.0)
         
         // MARK: Set Pipeline State
         renderEncoder.setDepthStencilState(depthStencilState)
@@ -229,6 +272,12 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setVertexBuffer(
             self.mesh.vertexBuffers[0].buffer, offset: 0, index: Int(VertexBufferIndex.rawValue))
         
+        renderEncoder.setVertexBuffer(
+            self.mesh.vertexBuffers[1].buffer, offset: 0, index: Int(TangentBufferIndex.rawValue))
+        
+        renderEncoder.setVertexBuffer(
+            self.mesh.vertexBuffers[2].buffer, offset: 0, index: Int(BitangentBufferIndex.rawValue))
+        
         // MARK: Render
         for submesh in mesh.submeshes {
             
@@ -236,6 +285,9 @@ extension Renderer: MTKViewDelegate {
               baseColor,
               index: Int(BaseColorTextureIndex.rawValue))
             
+            renderEncoder.setFragmentTexture(
+              normal,
+              index: Int(NormalTextureIndex.rawValue))
             
             renderEncoder.drawIndexedPrimitives(
                 type: .triangle,
@@ -254,4 +306,12 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
+}
+
+func getNormalMatrix(_ modelMatrix: float4x4) -> float3x3 {
+    return float3x3(
+        [modelMatrix.columns.0.x, modelMatrix.columns.0.y, modelMatrix.columns.0.z],
+        [modelMatrix.columns.1.x, modelMatrix.columns.1.y, modelMatrix.columns.1.z],
+        [modelMatrix.columns.2.x, modelMatrix.columns.2.y, modelMatrix.columns.2.z]
+    ).inverse.transpose
 }

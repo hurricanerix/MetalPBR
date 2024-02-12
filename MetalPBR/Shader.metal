@@ -27,39 +27,62 @@ struct VertexIn {
     float4 position [[attribute(PositionIndex)]];
     float3 normal [[attribute(NormalIndex)]];
     float2 uv [[attribute(UVIndex)]];
+    float3 tangent [[attribute(TangentIndex)]];
+    float3 bitangent [[attribute(BitangentIndex)]];
 };
 
 struct VertexOut {
     float4 position [[position]];
     float3 fragPosition;
-    float3 normal;
     float2 uv;
+    float3 tangentLightPos;
+    float3 tangentViewPos;
+    float3 tangentFragPos;
 };
 
-vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]], constant Uniforms &uniforms [[buffer(UniformBufferIndex)]]) {
-    float4 worldPosition = uniforms.modelMatrix * vertex_in.position;
+vertex VertexOut vertex_main(const VertexIn in [[stage_in]], constant Uniforms &uniforms [[buffer(UniformBufferIndex)]]) {
+    float4 worldPosition = uniforms.modelMatrix * in.position;
+    
+    float3 T = normalize(uniforms.normalMatrix * in.tangent);
+    float3 N = normalize(uniforms.normalMatrix * in.normal);
+    T = normalize(T - dot(T, N) * N);
+    float3 B = cross(N, T);
+    float3x3 TBN = transpose(float3x3(T, B, N));
     
     VertexOut out {
         .position = uniforms.projectionMatrix * uniforms.viewMatrix * worldPosition,
         .fragPosition = worldPosition.xyz,
-        .normal = (uniforms.modelMatrix * float4(vertex_in.normal, 1.0)).xyz,
-        .uv = vertex_in.uv
+        .uv = in.uv,
+        .tangentLightPos = TBN * uniforms.lightPosition,
+        .tangentViewPos = TBN * uniforms.viewPosition,
+        .tangentFragPos = TBN * worldPosition.xyz
     };
     return out;
 }
 
-fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamBufferIndex)]], texture2d<float> baseColorTexture [[texture(BaseColorTextureIndex)]]) {
+fragment float4 fragment_main(VertexOut in [[stage_in]], constant Params &params [[buffer(ParamBufferIndex)]], texture2d<float> baseColorTexture [[texture(BaseColorTextureIndex)]], texture2d<float> normalTexture [[texture(NormalTextureIndex)]]) {
+    
     constexpr sampler textureSampler(filter::linear, mip_filter::linear, max_anisotropy(8), address::repeat);
     float3 baseColor = baseColorTexture.sample(textureSampler, in.uv).rgb;
-    
+    float3 normal = normalTexture.sample(textureSampler, in.uv).rgb;
+    normal = normal * 2.0 - 1;
+        
+    // Calculate Ambient Component
     float3 ambient = params.ambientStrength * baseColor;
     
-    float3 normal = normalize(in.normal);
-    float3 lightDirection = normalize(params.lightPosition - normal);
-    
-    float diff = max(dot(normal, lightDirection), 0.0);
+    // Calculate Diffuse Component
+    float3 lightDir = normalize(in.tangentLightPos - in.tangentFragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
     float3 diffuse = diff * baseColor;
     
-    vector_float3 color = ambient + diffuse;
+    // Calculate Specular Component
+    float3 viewDir = normalize(in.tangentViewPos - in.tangentFragPos);
+    float3 reflectDir = reflect(-lightDir, normal);
+    float3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 8.0);
+    float3 specular = float3(0.2) * spec;
+
+    // Calculate Final Color
+    vector_float3 color = ambient + diffuse + specular;
     return float4(color, 1.0);
 }

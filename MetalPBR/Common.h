@@ -25,14 +25,18 @@
 
 typedef enum {
     VertexBufferIndex = 0,
-    UniformBufferIndex = 1,
-    ParamBufferIndex = 2,
+    TangentBufferIndex = 1,
+    BitangentBufferIndex = 2,
+    UniformBufferIndex = 3,
+    ParamBufferIndex = 4,
 } BufferIndices;
 
 typedef enum {
     PositionIndex = 0,
     NormalIndex = 1,
-    UVIndex = 2
+    UVIndex = 2,
+    TangentIndex = 3,
+    BitangentIndex = 4
 } AttributeIndices;
 
 typedef enum {
@@ -52,14 +56,14 @@ typedef struct {
     matrix_float4x4 viewMatrix;
     matrix_float4x4 projectionMatrix;
     matrix_float3x3 normalMatrix;
+    simd_float3 lightPosition;
+    simd_float3 viewPosition;
 } Uniforms;
 
 typedef struct {
     uint width;
     uint height;
-    vector_float3 cameraPosition;
     float ambientStrength;
-    vector_float3 lightPosition;
 } Params;
 
 #endif /* Common_h */
