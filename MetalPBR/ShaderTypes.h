@@ -18,38 +18,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef Common_h
-#define Common_h
+#ifndef ShaderTypes_h
+#define ShaderTypes_h
+
+#ifdef __METAL_VERSION__
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+typedef metal::int32_t EnumBackingType;
+#else
+#import <Foundation/Foundation.h>
+typedef NSInteger EnumBackingType;
+#endif
 
 #import <simd/simd.h>
 
-typedef enum {
-    VertexBufferIndex = 0,
-    TangentBufferIndex = 1,
-    BitangentBufferIndex = 2,
-    UniformBufferIndex = 3,
-    ParamBufferIndex = 4,
-} BufferIndices;
+typedef NS_ENUM(EnumBackingType, BufferIndices) {
+    BufferIndicesVertex = 0,
+    BufferIndicesTangent = 1,
+    BufferIndicesBitangent = 2,
+    BufferIndicesUniforms = 3,
+    BufferIndicesParams = 4,
+};
 
-typedef enum {
-    PositionIndex = 0,
-    NormalIndex = 1,
-    UVIndex = 2,
-    TangentIndex = 3,
-    BitangentIndex = 4
-} AttributeIndices;
+typedef NS_ENUM(EnumBackingType, AttributeIndices) {
+    AttributeIndicesPosition = 0,
+    AttributeIndicesNormal = 1,
+    AttributeIndicesTexCoords = 2,
+    AttributeIndicesTangent = 3,
+    AttributeIndicesBitangent = 4
+};
 
-typedef enum {
-    BaseColorTextureIndex = 0,
-    EmissiveTextureIndex = 1,
-    MetallicTextureIndex = 2,
-    RoughnessTextureIndex = 3,
-    NormalTextureIndex = 4,
-    OcclusionTextureIndex = 5,
-    OpacityTextureIndex = 6,
-    ClearcoatTextureIndex = 7,
-    ClearcoatRoughnessTextureIndex = 8
-} TextureIndices;
+typedef NS_ENUM(EnumBackingType, TextureIndices) {
+    TextureIndicesBaseColor = 0,
+    TextureIndicesEmissive = 1,
+    TextureIndicesMetallic = 2,
+    TextureIndicesRoughness = 3,
+    TextureIndicesNormal = 4,
+    TextureIndicesOcclusion = 5,
+    TextureIndicesOpacity = 6,
+    TextureIndicesClearcoat = 7,
+    TextureIndicesClearcoatRoughness = 8
+};
 
 typedef struct {
     matrix_float4x4 modelMatrix;
@@ -66,4 +74,4 @@ typedef struct {
     float ambientStrength;
 } Params;
 
-#endif /* Common_h */
+#endif /* ShaderTypes_h */

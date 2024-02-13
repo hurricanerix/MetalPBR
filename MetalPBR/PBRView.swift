@@ -31,6 +31,11 @@ struct PBRView: View {
     
     init(clearColor: Color) {
         self.clearColor = clearColor
+        
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("TODO: Handle case where GPU is not supported")
+        }
+        metalView.device = device
     }
     
     var body: some View {
@@ -49,10 +54,7 @@ struct PBRViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MTKView, context: Context) {
-        updatePBRView()
-    }
-    
-    func updatePBRView() {
+        
     }
 }
 

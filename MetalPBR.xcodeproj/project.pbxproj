@@ -61,7 +61,7 @@
 		9906FD9D2B65770E00911077 /* MetalPBRUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPBRUITests.swift; sourceTree = "<group>"; };
 		9906FD9F2B65770E00911077 /* MetalPBRUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPBRUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		990AE8552B6BC15100BDAF0B /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
-		991D8B7B2B6E575400726173 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		991D8B7B2B6E575400726173 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		9921B3642B71014C008774CC /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		9921B3682B710252008774CC /* ColorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTests.swift; sourceTree = "<group>"; };
 		9921B36A2B711201008774CC /* PerspectiveCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerspectiveCamera.swift; sourceTree = "<group>"; };
@@ -141,7 +141,7 @@
 				996BFB072B657CE30081D0EA /* PBRView.swift */,
 				9921B36A2B711201008774CC /* PerspectiveCamera.swift */,
 				996BFB092B657DE30081D0EA /* Renderer.swift */,
-				991D8B7B2B6E575400726173 /* Common.h */,
+				991D8B7B2B6E575400726173 /* ShaderTypes.h */,
 				990AE8552B6BC15100BDAF0B /* Shader.metal */,
 				9906FD862B65770E00911077 /* Assets.xcassets */,
 				995649102B739F0B0003103D /* Assets3D */,
@@ -531,7 +531,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/Common.h;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -562,7 +562,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/Common.h;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -582,6 +582,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBRTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MetalPBR.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MetalPBR";
@@ -602,6 +603,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.hurricanerix.apps.MetalPBRTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPBR/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MetalPBR.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MetalPBR";
