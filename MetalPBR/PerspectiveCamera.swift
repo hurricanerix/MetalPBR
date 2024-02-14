@@ -81,15 +81,19 @@ class PerspectiveCamera: ObservableObject {
     
     func set(aspect newAspect: Float) {
         aspect = newAspect
-        updateProjectionMatrix()
+        self.updateProjectionMatrix()
     }
     
     func updateViewMatrix() {
-        viewMatrix = PerspectiveCamera.calculateViewMatrix(translation: position, rotation: rotation)
+        DispatchQueue.main.async {
+            self.viewMatrix = PerspectiveCamera.calculateViewMatrix(translation: self.position, rotation: self.rotation)
+        }
     }
     
     func updateProjectionMatrix() {
-        projectionMatrix = PerspectiveCamera.calculateProjectionMatrix(fov: fov, near: near, far: far, aspect: aspect)
+        DispatchQueue.main.async {
+            self.projectionMatrix = PerspectiveCamera.calculateProjectionMatrix(fov: self.fov, near: self.near, far: self.far, aspect: self.aspect)
+        }
     }
     
     internal static func calculateViewMatrix(translation: SIMD3<Float>, rotation: SIMD3<Float>) ->
