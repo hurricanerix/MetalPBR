@@ -25,7 +25,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            PBRView(clearColor: .green)
+            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
                 .tabItem {
                     Label("Render", systemImage: "photo.fill")
                 }

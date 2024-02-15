@@ -23,7 +23,7 @@ import SwiftUI
 struct ObjectSettingsView: View {
     var body: some View {
         VStack {
-            PBRView(clearColor: .green)
+            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
             Form {
                 
                 Text("Object Settings")

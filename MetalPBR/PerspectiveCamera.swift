@@ -27,12 +27,64 @@ class PerspectiveCamera: ObservableObject {
     @Published var viewMatrix: float4x4
     @Published var projectionMatrix: float4x4
     
-    var position: SIMD3<Float>
-    var rotation: SIMD3<Float> = [0.0, 1.0, 0.0]
-    var fov: Float
-    var near: Float
-    var far: Float
-    var aspect: Float
+    internal var _position: SIMD3<Float>
+    var position: SIMD3<Float> {
+        get {
+            return _position
+        }
+        set {
+            _position = newValue
+            updateViewMatrix()
+        }
+    }
+    
+    internal var _rotation: SIMD3<Float> = [0.0, 1.0, 0.0]
+    
+    var rotation: SIMD3<Float> {
+        get {
+            return _rotation
+        }
+        set {
+            _rotation = newValue
+            updateViewMatrix()
+        }
+    }
+    
+    internal var _fov: Float
+    var fov: Float {
+        get { return _fov }
+        set {
+            _fov = newValue
+            updateProjectionMatrix()
+        }
+    }
+    
+    var _near: Float
+    var near: Float {
+        get { return _near }
+        set {
+            _near = newValue
+            updateProjectionMatrix()
+        }
+    }
+    
+    var _far: Float
+    var far: Float {
+        get { return _far }
+        set {
+            _far = newValue
+            updateProjectionMatrix()
+        }
+    }
+    
+    var _aspect: Float
+    var aspect: Float {
+        get { return _aspect }
+        set {
+            _aspect = newValue
+            updateProjectionMatrix()
+        }
+    }
     
     init(position: SIMD3<Float> = [0.0, 0.0, -5.0],
          rotation: SIMD3<Float> = [0.0, 1.0, 0.0],
@@ -40,12 +92,12 @@ class PerspectiveCamera: ObservableObject {
          near: Float = 0.1,
          far: Float = 100,
          aspect: Float = 4/3) {
-        self.position = position
-        self.rotation = rotation
-        self.fov = fov
-        self.near = near
-        self.far = far
-        self.aspect = aspect
+        self._position = position
+        self._rotation = rotation
+        self._fov = fov
+        self._near = near
+        self._far = far
+        self._aspect = aspect
         
         viewMatrix = float4x4()
         projectionMatrix = float4x4()
@@ -53,17 +105,7 @@ class PerspectiveCamera: ObservableObject {
         updateViewMatrix()
         updateProjectionMatrix()
     }
-    
-    func set(position newPosition: SIMD3<Float>) {
-        position = newPosition
-        updateViewMatrix()
-    }
-    
-    func set(rotation newRotation: SIMD3<Float>) {
-        rotation = newRotation
-        updateViewMatrix()
-    }
-    
+   
     func set(fov newFOV: Float) {
         fov = newFOV
         updateProjectionMatrix()
