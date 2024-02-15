@@ -20,10 +20,10 @@
 
 import SwiftUI
 
-struct ObjectSettingsView: View {
+struct ObjectSettingsView: View {    
     var body: some View {
         VStack {
-            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
+            PBRView()
             Form {
                 
                 Text("Object Settings")
@@ -34,5 +34,6 @@ struct ObjectSettingsView: View {
 
 #Preview {
     ObjectSettingsView()
+        .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
 }

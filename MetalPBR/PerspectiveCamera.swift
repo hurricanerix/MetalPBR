@@ -22,12 +22,9 @@ import SwiftUI
 import simd
 
 class PerspectiveCamera: ObservableObject {
-    internal static let  piBy180: Float = Float.pi / 180
-    
     @Published var viewMatrix: float4x4
     @Published var projectionMatrix: float4x4
     
-    internal var _position: SIMD3<Float>
     var position: SIMD3<Float> {
         get {
             return _position
@@ -38,7 +35,6 @@ class PerspectiveCamera: ObservableObject {
         }
     }
     
-    internal var _rotation: SIMD3<Float> = [0.0, 1.0, 0.0]
     
     var rotation: SIMD3<Float> {
         get {
@@ -50,7 +46,6 @@ class PerspectiveCamera: ObservableObject {
         }
     }
     
-    internal var _fov: Float
     var fov: Float {
         get { return _fov }
         set {
@@ -59,7 +54,6 @@ class PerspectiveCamera: ObservableObject {
         }
     }
     
-    var _near: Float
     var near: Float {
         get { return _near }
         set {
@@ -68,7 +62,6 @@ class PerspectiveCamera: ObservableObject {
         }
     }
     
-    var _far: Float
     var far: Float {
         get { return _far }
         set {
@@ -77,7 +70,6 @@ class PerspectiveCamera: ObservableObject {
         }
     }
     
-    var _aspect: Float
     var aspect: Float {
         get { return _aspect }
         set {
@@ -106,26 +98,6 @@ class PerspectiveCamera: ObservableObject {
         updateProjectionMatrix()
     }
    
-    func set(fov newFOV: Float) {
-        fov = newFOV
-        updateProjectionMatrix()
-    }
-    
-    func set(near newNear: Float) {
-        near = newNear
-        updateProjectionMatrix()
-    }
-    
-    func set(far newFar: Float) {
-        far = newFar
-        updateProjectionMatrix()
-    }
-    
-    func set(aspect newAspect: Float) {
-        aspect = newAspect
-        self.updateProjectionMatrix()
-    }
-    
     func updateViewMatrix() {
         DispatchQueue.main.async {
             self.viewMatrix = PerspectiveCamera.calculateViewMatrix(translation: self.position, rotation: self.rotation)
@@ -137,6 +109,14 @@ class PerspectiveCamera: ObservableObject {
             self.projectionMatrix = PerspectiveCamera.calculateProjectionMatrix(fov: self.fov, near: self.near, far: self.far, aspect: self.aspect)
         }
     }
+    
+    internal static let  piBy180: Float = Float.pi / 180
+    internal var _position: SIMD3<Float>
+    internal var _rotation: SIMD3<Float> = [0.0, 1.0, 0.0]
+    internal var _fov: Float
+    internal var _near: Float
+    internal var _far: Float
+    internal var _aspect: Float
     
     internal static func calculateViewMatrix(translation: SIMD3<Float>, rotation: SIMD3<Float>) ->
     float4x4 {

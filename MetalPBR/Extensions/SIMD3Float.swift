@@ -19,3 +19,20 @@
 // SOFTWARE.
 
 import Foundation
+
+extension SIMD3<Float> {
+    var r: Float {
+        get { self.x }
+        set { self.x = newValue }
+    }
+    
+    var g: Float {
+        get { self.y }
+        set { self.y = newValue }
+    }
+    
+    var b: Float {
+        get { self.z }
+        set { self.z = newValue }
+    }
+}

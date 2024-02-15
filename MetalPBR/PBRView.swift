@@ -23,15 +23,13 @@ import MetalKit
 import UIKit
 
 struct PBRView: View {
+    @EnvironmentObject var environment: SceneEnvironment
     @EnvironmentObject var camera: PerspectiveCamera
     
     @State private var metalView = MTKView()
     @State private var renderer: Renderer?
-    @State private var clearColor: Color
     
-    init(clearColor: Color) {
-        self.clearColor = clearColor
-        
+    init() {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("TODO: Handle case where GPU is not supported")
         }
@@ -41,7 +39,7 @@ struct PBRView: View {
     var body: some View {
         PBRViewRepresentable(metalView: $metalView)
             .onAppear {
-                renderer = Renderer(metalView: metalView, clearColor: clearColor.rgba(), camera: camera)
+                renderer = Renderer(metalView: metalView, camera: camera, environment: environment)
             }
     }
 }
@@ -59,6 +57,7 @@ struct PBRViewRepresentable: UIViewRepresentable {
 }
 
 #Preview {
-    PBRView(clearColor: Color.green)
+    PBRView()
+        .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
 }

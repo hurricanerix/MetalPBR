@@ -23,9 +23,13 @@ import MetalKit
 class Renderer: NSObject {
     let speed: Float = 5
     
+    static var metalView: MTKView!
     static var device: MTLDevice!
     static var commandQueue: MTLCommandQueue!
     static var library: MTLLibrary!
+    
+    var environment: SceneEnvironment
+    var camera: PerspectiveCamera
     
     var lastTime: Double = CFAbsoluteTimeGetCurrent()
     var mesh: MTKMesh!
@@ -37,12 +41,12 @@ class Renderer: NSObject {
     var yRotation: Float
     var zRotation: Float
     var cameraPosition: SIMD3<Float>
-    var camera: PerspectiveCamera
+    
     var baseColor: MTLTexture?
     var normal: MTLTexture?
     
-    init(metalView: MTKView, clearColor: SIMD4<Float>, camera: PerspectiveCamera) {
-        
+    init(metalView: MTKView, camera: PerspectiveCamera, environment: SceneEnvironment) {
+        Self.metalView = metalView
         Self.device = metalView.device
 
         guard let commandQueue = Self.device.makeCommandQueue() else {
@@ -83,7 +87,9 @@ class Renderer: NSObject {
         xRotation = 0.0
         yRotation = 0.0
         zRotation = 0.0
+        
         self.camera = camera
+        self.environment = environment
         
         super.init()
         
@@ -102,13 +108,18 @@ class Renderer: NSObject {
             }
         }
         
-        metalView.clearColor = MTLClearColor(red: Double(clearColor[0]), green: Double(clearColor[1]), blue: Double(clearColor[2]), alpha: Double(clearColor[3]))
+        updateClearColor()
+        
         metalView.depthStencilPixelFormat = .depth32Float
         metalView.delegate = self
         
         mtkView(
             metalView,
             drawableSizeWillChange: metalView.drawableSize)
+    }
+    
+    func updateClearColor() {
+        Self.metalView.clearColor = MTLClearColor(red: Double(environment.backgroundColor.r), green: Double(environment.backgroundColor.g), blue: Double(environment.backgroundColor.b), alpha: 1.0)
     }
     
     class func buildMetalVertexDescriptor() -> MTLVertexDescriptor  {
@@ -269,6 +280,9 @@ extension Renderer: MTKViewDelegate {
         let currentTime = CFAbsoluteTimeGetCurrent()
         let deltaTime = Float(currentTime - lastTime)
         lastTime = currentTime
+        
+        // TODO: Probably shouldn't do this every frame, but should work for now.
+        updateClearColor()
         
         updateGameState(deltaTime)
         

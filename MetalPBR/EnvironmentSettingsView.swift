@@ -21,12 +21,22 @@
 import SwiftUI
 
 struct EnvironmentSettingsView: View {
+    @EnvironmentObject var environment: SceneEnvironment
+    
     var body: some View {
         VStack {
-            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
-            Form {
-                
-                Text("Environment Settings")
+            PBRView()
+            HStack {
+                GroupBox(label: Label(
+                    title: { Text("Background Color") },
+                    icon: { Image(systemName: "move.3d") }
+                )) {
+                    HStack {
+                        TextField("R", value: $environment.backgroundColor.r, format: .number)
+                        TextField("G", value: $environment.backgroundColor.g, format: .number)
+                        TextField("B", value: $environment.backgroundColor.b, format: .number)
+                    }
+                }
             }
         }
     }
@@ -34,5 +44,6 @@ struct EnvironmentSettingsView: View {
 
 #Preview {
     EnvironmentSettingsView()
+        .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
 }

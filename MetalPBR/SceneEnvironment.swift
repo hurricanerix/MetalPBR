@@ -19,3 +19,8 @@
 // SOFTWARE.
 
 import Foundation
+import SwiftUI
+
+class SceneEnvironment: ObservableObject {
+    @Published var backgroundColor: SIMD3<Float> = SIMD3<Float>(0.1, 0.1, 0.198)
+}

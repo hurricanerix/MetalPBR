@@ -21,11 +21,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var camera: PerspectiveCamera
-    
     var body: some View {
         TabView {
-            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
+            PBRView()
                 .tabItem {
                     Label("Render", systemImage: "photo.fill")
                 }
@@ -48,5 +46,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
 }

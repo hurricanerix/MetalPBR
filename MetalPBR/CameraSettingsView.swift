@@ -25,54 +25,54 @@ struct CameraSettingsView: View {
     
     var body: some View {
         VStack {
-            PBRView(clearColor: Color(red: 0.1, green: 0.1, blue: 0.198))
+            PBRView()
+            HStack {
+                GroupBox(label: Label(
+                    title: { Text("Position") },
+                    icon: { Image(systemName: "move.3d") }
+                )) {
+                    HStack {
+                        TextField("X", value: $camera.position.x, format: .number)
+                        TextField("Y", value: $camera.position.y, format: .number)
+                        TextField("Z", value: $camera.position.z, format: .number)
+                    }
+                }
+            }
+            GroupBox(label: Label(
+                title: { Text("Rotation") },
+                icon: { Image(systemName: "rotate.3d") }
+            )) {
                 HStack {
-                    GroupBox(label: Label(
-                        title: { Text("Position") },
-                        icon: { Image(systemName: "move.3d") }
-                    )) {
-                        HStack {
-                            TextField("X", value: $camera.position.x, format: .number)
-                            TextField("Y", value: $camera.position.y, format: .number)
-                            TextField("Z", value: $camera.position.z, format: .number)
-                        }
-                    }
-                }
-                GroupBox(label: Label(
-                    title: { Text("Rotation") },
-                    icon: { Image(systemName: "rotate.3d") }
-                )) {
                     HStack {
-                        HStack {
                         
-                            TextField("X", value: $camera.rotation.x, format: .number)
-                         
-                            TextField("Y", value: $camera.rotation.y, format: .number)
-                            
-                            TextField("Z", value: $camera.rotation.z, format: .number)
-                        }
+                        TextField("X", value: $camera.rotation.x, format: .number)
+                        
+                        TextField("Y", value: $camera.rotation.y, format: .number)
+                        
+                        TextField("Z", value: $camera.rotation.z, format: .number)
                     }
                 }
-                
-                GroupBox(label: Label(
-                    title: { Text("Frustrum") },
-                    icon: { Image(systemName: "questionmark.circle") }
-                )) {
-                    HStack {
-                        Text("FOV")
-                            .bold()
-                        TextField("45", value: $camera.fov, format: .number)
-                    }
-                    HStack {
-                        Text("Near")
-                            .bold()
-                        TextField("0.1", value: $camera.near, format: .number)
-                    }
-                    HStack {
-                        Text("Far")
-                            .bold()
-                        TextField("0.1", value: $camera.far, format: .number)
-                    }
+            }
+            
+            GroupBox(label: Label(
+                title: { Text("Frustrum") },
+                icon: { Image(systemName: "questionmark.circle") }
+            )) {
+                HStack {
+                    Text("FOV")
+                        .bold()
+                    TextField("45", value: $camera.fov, format: .number)
+                }
+                HStack {
+                    Text("Near")
+                        .bold()
+                    TextField("0.1", value: $camera.near, format: .number)
+                }
+                HStack {
+                    Text("Far")
+                        .bold()
+                    TextField("0.1", value: $camera.far, format: .number)
+                }
             }
         }
     }
@@ -80,5 +80,6 @@ struct CameraSettingsView: View {
 
 #Preview {
     CameraSettingsView()
+        .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
 }
