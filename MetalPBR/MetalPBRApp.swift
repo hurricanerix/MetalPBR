@@ -24,12 +24,14 @@ import SwiftUI
 struct MetalPBRApp: App {
     @StateObject var environment = SceneEnvironment()
     @StateObject var camera = PerspectiveCamera()
+    @StateObject var subject = Object()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(environment)
                 .environmentObject(camera)
+                .environmentObject(subject)
         }
     }
 }

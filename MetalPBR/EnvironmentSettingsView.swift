@@ -29,9 +29,10 @@ struct EnvironmentSettingsView: View {
             HStack {
                 GroupBox(label: Label(
                     title: { Text("Background Color") },
-                    icon: { Image(systemName: "move.3d") }
+                    icon: { Image(systemName: "paintpalette") }
                 )) {
                     HStack {
+                        // TODO: Insert color picker here
                         TextField("R", value: $environment.backgroundColor.r, format: .number)
                         TextField("G", value: $environment.backgroundColor.g, format: .number)
                         TextField("B", value: $environment.backgroundColor.b, format: .number)
@@ -46,4 +47,5 @@ struct EnvironmentSettingsView: View {
     EnvironmentSettingsView()
         .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
+        .environmentObject(Object())
 }

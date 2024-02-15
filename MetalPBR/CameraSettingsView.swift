@@ -82,4 +82,5 @@ struct CameraSettingsView: View {
     CameraSettingsView()
         .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
+        .environmentObject(Object())
 }

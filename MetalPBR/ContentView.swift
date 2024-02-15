@@ -48,4 +48,5 @@ struct ContentView: View {
     ContentView()
         .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
+        .environmentObject(Object())
 }

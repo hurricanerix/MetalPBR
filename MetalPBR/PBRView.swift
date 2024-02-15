@@ -25,6 +25,7 @@ import UIKit
 struct PBRView: View {
     @EnvironmentObject var environment: SceneEnvironment
     @EnvironmentObject var camera: PerspectiveCamera
+    @EnvironmentObject var subject: Object
     
     @State private var metalView = MTKView()
     @State private var renderer: Renderer?
@@ -39,7 +40,7 @@ struct PBRView: View {
     var body: some View {
         PBRViewRepresentable(metalView: $metalView)
             .onAppear {
-                renderer = Renderer(metalView: metalView, camera: camera, environment: environment)
+                renderer = Renderer(metalView: metalView, camera: camera, environment: environment, subject: subject)
             }
     }
 }
@@ -60,4 +61,5 @@ struct PBRViewRepresentable: UIViewRepresentable {
     PBRView()
         .environmentObject(SceneEnvironment())
         .environmentObject(PerspectiveCamera())
+        .environmentObject(Object())
 }

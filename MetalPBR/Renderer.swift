@@ -20,9 +20,7 @@
 
 import MetalKit
 
-class Renderer: NSObject {
-    let speed: Float = 5
-    
+class Renderer: NSObject {    
     static var metalView: MTKView!
     static var device: MTLDevice!
     static var commandQueue: MTLCommandQueue!
@@ -30,6 +28,7 @@ class Renderer: NSObject {
     
     var environment: SceneEnvironment
     var camera: PerspectiveCamera
+    var subject: Object
     
     var lastTime: Double = CFAbsoluteTimeGetCurrent()
     var mesh: MTKMesh!
@@ -37,15 +36,12 @@ class Renderer: NSObject {
     var depthStencilState: MTLDepthStencilState!
     var uniforms: Uniforms
     var params: Params
-    var xRotation: Float
-    var yRotation: Float
-    var zRotation: Float
     var cameraPosition: SIMD3<Float>
     
     var baseColor: MTLTexture?
     var normal: MTLTexture?
     
-    init(metalView: MTKView, camera: PerspectiveCamera, environment: SceneEnvironment) {
+    init(metalView: MTKView, camera: PerspectiveCamera, environment: SceneEnvironment, subject: Object) {
         Self.metalView = metalView
         Self.device = metalView.device
 
@@ -84,12 +80,10 @@ class Renderer: NSObject {
         uniforms = Uniforms()
         params = Params()
         cameraPosition = SIMD3<Float>(0, 0, -10)
-        xRotation = 0.0
-        yRotation = 0.0
-        zRotation = 0.0
         
         self.camera = camera
         self.environment = environment
+        self.subject = subject
         
         super.init()
         
@@ -340,16 +334,12 @@ extension Renderer: MTKViewDelegate {
     }
     
     internal func updateGameState(_ deltaTime: Float) {
-        xRotation += 10.0 * speed * deltaTime
-        yRotation += 7.0 * speed * deltaTime
-        zRotation += 3.0 * speed * deltaTime
-        let modelMatrix = float4x4.rotate(eulerX: xRotation) * float4x4.rotate(eulerY: yRotation) * float4x4.rotate(eulerZ: zRotation)
+        subject.update(deltaTime)
         
-        // MARK: Update buffer data
-        uniforms.modelMatrix = modelMatrix
+        uniforms.modelMatrix = subject.modelMatrix
         uniforms.viewMatrix = camera.viewMatrix
         uniforms.projectionMatrix = camera.projectionMatrix
-        uniforms.normalMatrix = getNormalMatrix(modelMatrix)
+        uniforms.normalMatrix = getNormalMatrix(subject.modelMatrix)
         uniforms.lightPosition = SIMD3<Float>(-1.0, 10.0, -5.0)
         uniforms.viewPosition = cameraPosition
         
